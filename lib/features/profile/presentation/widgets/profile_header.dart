@@ -64,7 +64,7 @@ class ProfileHeader extends StatelessWidget {
             const SizedBox(height: 4),
 
             Text(
-              'Fitness Enthusiast',
+              'Keep Walking, Keep Growing.',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.75),
                 fontSize: 14,

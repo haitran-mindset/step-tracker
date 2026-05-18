@@ -79,11 +79,11 @@ class UserProfileModel extends HiveObject {
 
   /// Default profile for first-time users
   static UserProfileModel get defaultProfile => UserProfileModel(
-        id: 'default_user',
-        name: 'Fitness Pro',
-        height: 170.0,
-        weight: 70.0,
-        age: 28,
+        id: 'hai_tran',
+        name: 'Hai Tran',
+        height: 165.0,
+        weight: 53.0,
+        age: 29,
         gender: 'male',
         totalLifetimeSteps: 0,
         createdAt: DateTime.now(),
