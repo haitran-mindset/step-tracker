@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/number_formatter.dart';
 
 class MilestoneCard extends StatelessWidget {
   final int steps;
@@ -105,6 +106,5 @@ class MilestoneCard extends StatelessWidget {
     );
   }
 
-  String _formatK(int n) =>
-      n >= 1000 ? '${(n / 1000).toStringAsFixed(0)}k' : '$n';
+  String _formatK(int n) => NumberFormatter.formatSteps(n);
 }

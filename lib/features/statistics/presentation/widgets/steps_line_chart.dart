@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/number_formatter.dart';
 import '../providers/stat_filter_provider.dart';
 
 class StepsLineChart extends StatelessWidget {
@@ -43,10 +44,12 @@ class StepsLineChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 42,
-                getTitlesWidget: (v, meta) => Text(
-                  '${(v / 1000).toStringAsFixed(0)}k',
-                  style: TextStyle(fontSize: 10, color: labelColor),
-                ),
+                getTitlesWidget: (v, meta) {
+                  return Text(
+                    NumberFormatter.formatSteps(v),
+                    style: TextStyle(fontSize: 10, color: labelColor),
+                  );
+                },
               ),
             ),
             bottomTitles: AxisTitles(

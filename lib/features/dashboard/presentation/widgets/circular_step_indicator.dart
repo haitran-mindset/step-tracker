@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/number_formatter.dart';
 import '../../../../shared/widgets/common_widgets.dart';
 
 /// Premium circular progress indicator for the main step counter
@@ -146,12 +147,7 @@ class CircularStepIndicator extends StatelessWidget {
     );
   }
 
-  String _formatNumber(int n) {
-    if (n >= 1000) {
-      return '${(n / 1000).toStringAsFixed(0)}k';
-    }
-    return n.toString();
-  }
+  String _formatNumber(int n) => NumberFormatter.formatSteps(n);
 }
 
 /// Custom arc painter for the circular progress ring
