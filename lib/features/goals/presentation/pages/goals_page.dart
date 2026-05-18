@@ -8,6 +8,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/providers/step_counter_provider.dart';
 import '../../../../shared/widgets/app_cards.dart';
 import '../../../../shared/widgets/common_widgets.dart';
+import '../widgets/milestone_card.dart';
+import '../widgets/set_goal_section.dart';
 
 class GoalsPage extends ConsumerWidget {
   const GoalsPage({super.key});
@@ -140,7 +142,7 @@ class GoalsPage extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // ─── Set Goal Button ───
-                _SetGoalSection(currentGoal: goal)
+                SetGoalSection(currentGoal: goal)
                     .animate()
                     .fadeIn(delay: 150.ms)
                     .slideY(begin: 0.2),
@@ -236,7 +238,7 @@ class GoalsPage extends ConsumerWidget {
 
     return milestones.map((m) {
       final isAchieved = currentSteps >= m.$1;
-      return _MilestoneCard(
+      return MilestoneCard(
         steps: m.$1,
         label: m.$2,
         icon: m.$3,
@@ -246,223 +248,4 @@ class GoalsPage extends ConsumerWidget {
       );
     }).toList();
   }
-}
-
-// ──────────────────── Set Goal Section ────────────────────
-
-class _SetGoalSection extends ConsumerStatefulWidget {
-  final int currentGoal;
-  const _SetGoalSection({required this.currentGoal});
-
-  @override
-  ConsumerState<_SetGoalSection> createState() => _SetGoalSectionState();
-}
-
-class _SetGoalSectionState extends ConsumerState<_SetGoalSection> {
-  late int _selected;
-  static const _presets = [5000, 7500, 10000, 12500, 15000];
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = widget.currentGoal;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return NeumorphicCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(title: 'Set Daily Goal'),
-          const SizedBox(height: 16),
-
-          // Preset chips
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _presets.map((p) {
-              final isSelected = _selected == p;
-              return ChoiceChip(
-                label: Text(_formatSteps(p)),
-                selected: isSelected,
-                onSelected: (_) {
-                  setState(() => _selected = p);
-                  HapticFeedback.lightImpact();
-                  ref.read(dailyGoalProvider.notifier).setGoal(p);
-                },
-                selectedColor: AppColors.primary,
-                backgroundColor:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.surfaceDark
-                        : const Color(0xFFF0F1FF),
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : null,
-                  fontWeight: FontWeight.w600,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: isSelected
-                        ? Colors.transparent
-                        : AppColors.primary.withOpacity(0.2),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Custom goal slider
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              trackHeight: 6,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-              activeTrackColor: AppColors.primary,
-              inactiveTrackColor: AppColors.primary.withOpacity(0.2),
-              thumbColor: Colors.white,
-              overlayColor: AppColors.primary.withOpacity(0.15),
-            ),
-            child: Slider(
-              min: 1000,
-              max: 20000,
-              divisions: 38,
-              value: _selected.toDouble(),
-              onChanged: (v) {
-                setState(() => _selected = v.round());
-              },
-              onChangeEnd: (v) {
-                ref.read(dailyGoalProvider.notifier).setGoal(v.round());
-                HapticFeedback.selectionClick();
-              },
-            ),
-          ),
-
-          Center(
-            child: Text(
-              _formatSteps(_selected),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w800,
-                  ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatSteps(int n) {
-    if (n >= 1000) return '${(n / 1000).toStringAsFixed(1)}k steps';
-    return '$n steps';
-  }
-}
-
-// ──────────────────── Milestone Card ────────────────────
-
-class _MilestoneCard extends StatelessWidget {
-  final int steps;
-  final String label;
-  final IconData icon;
-  final Color color;
-  final bool isAchieved;
-  final int currentSteps;
-
-  const _MilestoneCard({
-    required this.steps,
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.isAchieved,
-    required this.currentSteps,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final progress = (currentSteps / steps).clamp(0.0, 1.0);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isAchieved ? color.withOpacity(0.4) : Colors.transparent,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: isAchieved ? color : color.withOpacity(0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isAchieved ? Icons.check_rounded : icon,
-              color: isAchieved ? Colors.white : color,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(label,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            )),
-                    Text(
-                      '${_formatK(steps)} steps',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : AppColors.textSecondaryLight,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: progress),
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeOutCubic,
-                    builder: (context, v, _) => LinearProgressIndicator(
-                      value: v,
-                      backgroundColor: isDark
-                          ? AppColors.surfaceDark
-                          : const Color(0xFFEEF1FF),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          isAchieved ? color : color.withOpacity(0.7)),
-                      minHeight: 6,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatK(int n) =>
-      n >= 1000 ? '${(n / 1000).toStringAsFixed(0)}k' : '$n';
 }
