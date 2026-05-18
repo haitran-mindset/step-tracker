@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pedometer/pedometer.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -97,8 +99,21 @@ class StepCounterNotifier extends StateNotifier<StepCounterState> {
     state = state.copyWith(steps: today.steps);
 
     try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        final status = await Permission.activityRecognition.request();
+        if (status.isDenied || status.isPermanentlyDenied) {
+          state = state.copyWith(
+            errorMessage: 'Activity recognition permission denied',
+            permissionGranted: false,
+          );
+          _useMockData();
+          return;
+        }
+      }
+
       // Listen to pedestrian status (walking/stopped)
       _statusSub = Pedometer.pedestrianStatusStream.listen(
+
         _onPedestrianStatus,
         onError: (_) => state = state.copyWith(isWalking: false),
       );
