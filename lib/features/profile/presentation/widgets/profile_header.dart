@@ -7,8 +7,14 @@ import '../../../../features/settings/data/models/user_profile_model.dart';
 class ProfileHeader extends StatelessWidget {
   final UserProfileModel profile;
   final bool isDark;
+  final String? email;
 
-  const ProfileHeader({super.key, required this.profile, required this.isDark});
+  const ProfileHeader({
+    super.key,
+    required this.profile,
+    required this.isDark,
+    this.email,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +69,22 @@ class ProfileHeader extends StatelessWidget {
 
             const SizedBox(height: 4),
 
+            if (email != null)
+              Text(
+                email!,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.75),
+                  fontSize: 13,
+                ),
+              ).animate().fadeIn(delay: 130.ms),
+
+            const SizedBox(height: 4),
+
             Text(
               'Keep Walking, Keep Growing.',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.75),
-                fontSize: 14,
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 13,
               ),
             ).animate().fadeIn(delay: 150.ms),
           ],

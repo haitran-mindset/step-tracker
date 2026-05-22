@@ -79,8 +79,8 @@ class UserProfileModel extends HiveObject {
 
   /// Default profile for first-time users
   static UserProfileModel get defaultProfile => UserProfileModel(
-        id: 'hai_tran',
-        name: 'Hai Tran',
+        id: 'user_name',
+        name: 'Username',
         height: 165.0,
         weight: 53.0,
         age: 29,
